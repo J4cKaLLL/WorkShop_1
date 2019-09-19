@@ -1,0 +1,158 @@
+openapi: 3.0.0
+info:
+  title: API Falabella FIF
+  description: Esta API esta diseñada para ser una prueba para los nuevos candidatos
+    al equipo.
+  contact:
+    email: lugaetea@falabella.cl
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: cerveza
+  description: rica cerveza..
+paths:
+  /beers:
+    get:
+      tags:
+      - cerveza
+      summary: Lista todas las cervezas
+      description: |
+        Lista todas las cervezas que se encuentran en la base de datos
+      operationId: searchBeers
+      responses:
+        200:
+          description: Operacion exitosa
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BeerItem'
+    post:
+      tags:
+      - cerveza
+      summary: Ingresa una nueva cerveza
+      description: Ingresa una nueva cerveza
+      operationId: addBeers
+      requestBody:
+        description: Ingresa una nueva cerveza
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BeerItem'
+      responses:
+        201:
+          description: Cerveza creada
+        400:
+          description: Request invalida
+        409:
+          description: El ID de la cerveza ya existe
+  /beers/{beerID}:
+    get:
+      tags:
+      - cerveza
+      summary: Lista el detalle de la marca de cervezas
+      description: |
+        Busca una cerveza por su Id
+      operationId: searchBeerById
+      parameters:
+      - name: beerID
+        in: path
+        description: Busca una cerveza por su Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        200:
+          description: Operacion exitosa
+        400:
+          description: Request invalida
+        404:
+          description: El Id de la cerveza no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeerItem'
+  /beers/{beerID}/boxprice:
+    get:
+      tags:
+      - cerveza
+      summary: Lista el precio de una caja de cervezas de una marca
+      description: |
+        Obtiene el precio de una caja de cerveza por su Id
+      operationId: boxBeerPriceById
+      parameters:
+      - name: beerID
+        in: path
+        description: Busca una cerveza por su Id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: currency
+        in: query
+        description: Tipo de moneda con la que pagará
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      - name: quantity
+        in: query
+        description: La cantidad de cervezas a comprar
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: integer
+          default: 6
+      responses:
+        200:
+          description: Operacion exitosa
+        400:
+          description: Request invalida
+        404:
+          description: El Id de la cerveza no existe
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BeerBox'
+components:
+  schemas:
+    BeerItem:
+      required:
+      - Brewery
+      - Country
+      - Currency
+      - Id
+      - Name
+      - Price
+      type: object
+      properties:
+        Id:
+          type: integer
+          example: 1
+        Name:
+          type: string
+          example: Golden
+        Brewery:
+          type: string
+          example: Kross
+        Country:
+          type: string
+          example: Chile
+        Price:
+          type: number
+          example: 10.5
+        Currency:
+          type: string
+          example: EUR
+    BeerBox:
+      type: object
+      properties:
+        Price:
+          type: number
